@@ -1,0 +1,3 @@
+add email templates and an SMTP provider stub,
+
+add strong password policy validation and breached password checks.

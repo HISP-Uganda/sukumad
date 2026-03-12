@@ -1,0 +1,911 @@
+basePath: /
+definitions:
+  types.APIError:
+    properties:
+      error:
+        example: bad request
+        type: string
+    type: object
+  types.GrantRolePermission:
+    properties:
+      permission_id:
+        example: 10
+        type: integer
+    required:
+    - permission_id
+    type: object
+  types.GrantUserPermission:
+    properties:
+      permission_id:
+        example: 10
+        type: integer
+    required:
+    - permission_id
+    type: object
+  types.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  types.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  types.PasswordResetConfirm:
+    properties:
+      new_password:
+        minLength: 8
+        type: string
+      token:
+        type: string
+    required:
+    - new_password
+    - token
+    type: object
+  types.PasswordResetRequest:
+    properties:
+      username_or_email:
+        type: string
+    required:
+    - username_or_email
+    type: object
+  types.Permission:
+    properties:
+      code:
+        example: can_view_reporters
+        type: string
+      created:
+        type: string
+      id:
+        example: 10
+        type: integer
+      name:
+        example: Can view reporters
+        type: string
+      system_module:
+        example: Reporters
+        type: string
+      updated:
+        type: string
+    required:
+    - code
+    - name
+    - system_module
+    type: object
+  types.Role:
+    properties:
+      created:
+        type: string
+      description:
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Admin
+        type: string
+      updated:
+        type: string
+    required:
+    - name
+    type: object
+  types.Server:
+    properties:
+      allow_callbacks:
+        type: boolean
+      allow_copies:
+        type: boolean
+      auth_method:
+        example: basic
+        type: string
+      auth_token:
+        type: string
+      burst:
+        example: 20
+        type: integer
+      callback_url:
+        example: https://example.org/callback
+        type: string
+      cc_urls:
+        example:
+        - '["https://a"'
+        - '"https://b"]'
+        items:
+          type: string
+        type: array
+      created:
+        type: string
+      default_content_type:
+        example: application/json
+        type: string
+      end_submission_period:
+        example: 2359
+        type: integer
+      endpoint_type:
+        type: string
+      headers:
+        additionalProperties:
+          type: string
+        example:
+          '{"Accept"': '"application/json"}'
+        type: object
+      http_method:
+        example: POST
+        type: string
+      id:
+        example: 1
+        type: integer
+      ipaddress:
+        example: 10.0.0.12
+        type: string
+      json_response_xpath:
+        type: string
+      max_concurrency:
+        example: 2
+        type: integer
+      name:
+        example: DHIS2 Main
+        type: string
+      parse_responses:
+        type: boolean
+      password:
+        example: district
+        type: string
+      rate_class:
+        example: server:1
+        type: string
+      rps:
+        example: 10
+        type: number
+      ssl_client_certkey_file:
+        type: string
+      start_submission_period:
+        example: 0
+        type: integer
+      suspended:
+        example: false
+        type: boolean
+      system_type:
+        type: string
+      timeout_ms:
+        example: 10000
+        type: integer
+      uid:
+        example: 9e2b34f0-1fb2-4a2f-a6d9-0b2a1f92d144
+        type: string
+      updated:
+        type: string
+      url:
+        example: https://dhis2.example.org/api/dataValueSets
+        type: string
+      url_params: {}
+      use_async:
+        example: true
+        type: boolean
+      use_ssl:
+        example: true
+        type: boolean
+      username:
+        example: admin
+        type: string
+      xml_response_xpath:
+        type: string
+    required:
+    - auth_method
+    - default_content_type
+    - http_method
+    - name
+    - url
+    type: object
+  types.SetUserRole:
+    properties:
+      role_id:
+        example: 1
+        type: integer
+    required:
+    - role_id
+    type: object
+  types.User:
+    properties:
+      allowed_ips:
+        example:
+        - '["10.0.0.0/8"'
+        - '"192.168.0.0/16"]'
+        items:
+          type: string
+        type: array
+      created:
+        type: string
+      denied_ips:
+        items:
+          type: string
+        type: array
+      email:
+        example: jane@example.org
+        type: string
+      failed_attempts:
+        example: 0
+        type: integer
+      firstname:
+        example: Jane
+        type: string
+      id:
+        example: 100
+        type: integer
+      is_active:
+        example: true
+        type: boolean
+      is_system_user:
+        example: false
+        type: boolean
+      last_failed_at:
+        type: string
+      last_login:
+        type: string
+      last_passwd_update:
+        type: string
+      lastname:
+        example: Doe
+        type: string
+      locked_until:
+        type: string
+      telephone:
+        example: "+256700000000"
+        type: string
+      transaction_limit:
+        example: 1000
+        type: number
+      updated:
+        type: string
+      user_role:
+        example: 1
+        type: integer
+      username:
+        example: jane
+        type: string
+    required:
+    - firstname
+    - lastname
+    - username
+    type: object
+info:
+  contact: {}
+  description: CRUD for servers, requests, and deliveries with rate-limited worker.
+  title: Sukumad API
+  version: "1.0"
+paths:
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login to the system and obtain a JWT token for further requests.
+      parameters:
+      - description: Login
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.LoginRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.LoginResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/types.APIError'
+      summary: Login and obtain a JWT
+      tags:
+      - auth
+  /api/auth/logout:
+    post:
+      description: Logout the user by revoking all their refresh tokens.
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Logout (revoke all refresh tokens for user)
+      tags:
+      - auth
+  /api/auth/password/reset/confirm:
+    post:
+      consumes:
+      - application/json
+      description: Confirm password reset by providing token and new password.
+      parameters:
+      - description: Token + New Password
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.PasswordResetConfirm'
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.APIError'
+      summary: Confirm password reset
+      tags:
+      - auth
+  /api/auth/password/reset/request:
+    post:
+      consumes:
+      - application/json
+      description: Request a password reset by providing username or email.
+      parameters:
+      - description: Username or Email
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.PasswordResetRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Request password reset
+      tags:
+      - auth
+  /api/auth/refresh:
+    post:
+      description: Refresh the access token using a valid refresh token.
+      parameters:
+      - description: 'Refresh token in Authorization: Bearer <token>'
+        in: header
+        name: refresh
+        required: true
+        type: string
+      responses:
+        "200":
+          description: access, refresh
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/types.APIError'
+      summary: Refresh tokens (rotate refresh)
+      tags:
+      - auth
+  /api/permissions:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Permission'
+            type: array
+      summary: List permissions
+      tags:
+      - permissions
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Permission payload
+        in: body
+        name: permission
+        required: true
+        schema:
+          $ref: '#/definitions/types.Permission'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/types.Permission'
+      summary: Create permission
+      tags:
+      - permissions
+  /api/permissions/{id}:
+    delete:
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      summary: Delete permission
+      tags:
+      - permissions
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Permission payload
+        in: body
+        name: permission
+        required: true
+        schema:
+          $ref: '#/definitions/types.Permission'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Permission'
+      summary: Update permission
+      tags:
+      - permissions
+  /api/roles:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Role'
+            type: array
+      summary: List roles
+      tags:
+      - roles
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Role payload
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/types.Role'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/types.Role'
+      summary: Create role
+      tags:
+      - roles
+  /api/roles/{id}:
+    delete:
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      summary: Delete role
+      tags:
+      - roles
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Role payload
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/types.Role'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Role'
+      summary: Update role
+      tags:
+      - roles
+  /api/roles/{id}/permissions:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Permission revoke
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.GrantRolePermission'
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Revoke permission from role
+      tags:
+      - roles
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Role ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Permission grant
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.GrantRolePermission'
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Grant permission to role
+      tags:
+      - roles
+  /api/servers:
+    get:
+      description: List servers with pagination
+      parameters:
+      - default: 50
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.APIError'
+      summary: List servers
+      tags:
+      - servers
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Server payload
+        in: body
+        name: server
+        required: true
+        schema:
+          $ref: '#/definitions/types.Server'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/types.Server'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.APIError'
+      summary: Create server
+      tags:
+      - servers
+  /api/servers/{id}:
+    delete:
+      parameters:
+      - description: Server ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.APIError'
+      summary: Delete server
+      tags:
+      - servers
+    get:
+      parameters:
+      - description: Server ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Server'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/types.APIError'
+      summary: Get server
+      tags:
+      - servers
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Server ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Server payload
+        in: body
+        name: server
+        required: true
+        schema:
+          $ref: '#/definitions/types.Server'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Server'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.APIError'
+      summary: Update server
+      tags:
+      - servers
+  /api/users:
+    get:
+      parameters:
+      - default: 50
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: List users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User payload (password required)
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.User'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/types.User'
+      summary: Create user
+      tags:
+      - users
+  /api/users/{id}:
+    delete:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      summary: Delete user
+      tags:
+      - users
+    get:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.User'
+      summary: Get user
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User payload (password optional)
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.User'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.User'
+      summary: Update user
+      tags:
+      - users
+  /api/users/{id}/permissions:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Permission revoke
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.GrantUserPermission'
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Revoke permission from user
+      tags:
+      - users
+    get:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Permission'
+            type: array
+      summary: List user's effective permissions
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Permission grant
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.GrantUserPermission'
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Grant permission to user
+      tags:
+      - users
+  /api/users/{id}/role:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Set role
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.SetUserRole'
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Set user role
+      tags:
+      - users
+  /api/users/{id}/unlock:
+    post:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/types.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.APIError'
+      summary: 'Admin: unlock a user account'
+      tags:
+      - users
+schemes:
+- http
+- https
+swagger: "2.0"
